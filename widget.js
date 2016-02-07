@@ -34,7 +34,7 @@ requirejs.config({
     }
 });
 
-cprequire_test(["inline:com-chilipeppr-widget-template"], function(myWidget) {
+cprequire_test(["inline:com-chilipeppr-widget-playground"], function(myWidget) {
 
     // Test this element. This code is auto-removed by the chilipeppr.load()
     // when using this widget in production. So use the cpquire_test to do things
@@ -74,14 +74,14 @@ cprequire_test(["inline:com-chilipeppr-widget-template"], function(myWidget) {
 } /*end_test*/ );
 
 // This is the main definition of your widget. Give it a unique name.
-cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other dependencies here */ ], function() {
+cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* other dependencies here */ ], function() {
     return {
         /**
          * The ID of the widget. You must define this and make it unique.
          */
-        id: "com-chilipeppr-widget-template", // Make the id the same as the cpdefine id
-        name: "Widget / Template", // The descriptive name of your widget.
-        desc: "This example widget gives you a framework for creating your own widget. Please change this description once you fork this template and create your own widget. Make sure to run runme.js every time you are done editing your code so you can regenerate your README.md file, regenerate your auto-generated-widget.html, and automatically push your changes to Github.", // A description of what your widget does
+        id: "com-chilipeppr-widget-playground", // Make the id the same as the cpdefine id
+        name: "Widget / Playground", // The descriptive name of your widget.
+        desc: "This is a testing area to try out new pieces of coding to work with Chilipeppr.", // A description of what your widget does
         url: "(auto fill by runme.js)",       // The final URL of the working widget as a single HTML file with CSS and Javascript inlined. You can let runme.js auto fill this if you are using Cloud9.
         fiddleurl: "(auto fill by runme.js)", // The edit URL. This can be auto-filled by runme.js in Cloud9 if you'd like, or just define it on your own to help people know where they can edit/fork your widget
         githuburl: "(auto fill by runme.js)", // The backing github repo
@@ -97,7 +97,7 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
          */
         publish: {
             // Define a key:value pair here as strings to document what signals you publish.
-            '/onExampleGenerate': 'Example: Publish this signal when we go to generate gcode.'
+            //'/onExampleGenerate': 'Example: Publish this signal when we go to generate gcode.'
         },
         /**
          * Define the subscribe signals that this widget/element owns or defines so that
@@ -160,58 +160,8 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
                     that.hideBody(evt);
                 }
             });
-
-            // Ask bootstrap to scan all the buttons in the widget to turn
-            // on popover menus
-            $('#' + this.id + ' .btn').popover({
-                delay: 1000,
-                animation: true,
-                placement: "auto",
-                trigger: "hover",
-                container: 'body'
-            });
-
-            // Init Say Hello Button on Main Toolbar
-            // We are inlining an anonymous method as the callback here
-            // as opposed to a full callback method in the Hello Word 2
-            // example further below. Notice we have to use "that" so 
-            // that the this is set correctly inside the anonymous method
-            $('#' + this.id + ' .btn-sayhello').click(function() {
-                console.log("saying hello");
-                // Make sure popover is immediately hidden
-                $('#' + that.id + ' .btn-sayhello').popover("hide");
-                // Show a flash msg
-                chilipeppr.publish(
-                    "/com-chilipeppr-elem-flashmsg/flashmsg",
-                    "Hello Title",
-                    "Hello World from widget " + that.id,
-                    1000
-                );
-            });
-
-            // Init Hello World 2 button on Tab 1. Notice the use
-            // of the slick .bind(this) technique to correctly set "this"
-            // when the callback is called
-            $('#' + this.id + ' .btn-helloworld2').click(this.onHelloBtnClick.bind(this));
-
         },
-        /**
-         * onHelloBtnClick is an example of a button click event callback
-         */
-        onHelloBtnClick: function(evt) {
-            console.log("saying hello 2 from btn in tab 1");
-            chilipeppr.publish(
-                '/com-chilipeppr-elem-flashmsg/flashmsg',
-                "Hello 2 Title",
-                "Hello World 2 from Tab 1 from widget " + this.id,
-                2000 /* show for 2 second */
-            );
-        },
-        /**
-         * User options are available in this property for reference by your
-         * methods. If any change is made on these options, please call
-         * saveOptionsLocalStorage()
-         */
+
         options: null,
         /**
          * Call this method on init to setup the UI by reading the user's
@@ -270,6 +220,7 @@ cpdefine("inline:com-chilipeppr-widget-template", ["chilipeppr_ready", /* other 
             // store settings to localStorage
             localStorage.setItem(this.id + '-options', optionsStr);
         },
+
         /**
          * Show the body of the panel.
          * @param {jquery_event} evt - If you pass the event parameter in, we 
