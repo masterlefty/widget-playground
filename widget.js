@@ -136,9 +136,29 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             this.setupUiFromLocalStorage();
             this.btnSetup();
             this.forkSetup();
+            
+            // setup run buttons
+            $('#' + this.id + ' .btn-touchplaterun1').click(this.onRun.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
 
             console.log("I am done being initted.");
         },
+        
+        isRunning: false,
+        
+        onRun: function(evt) {
+            // when user clicks the run button
+            console.log("user clicked run button. evt:", evt, event.target.id);
+            
+            // define variable to determine which subroutine to run based on
+            // user selection through the tabs
+            var runCode = event.target.id;
+            // logs which button was clicked
+            console.log("this is the runCode:", runCode);
+            
+        },
+        
+        
         /**
          * Call this method from init to setup all the buttons when this widget
          * is first loaded. This basically attaches click events to your 
@@ -292,5 +312,5 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
 
         },
 
-    }
+    };
 });
