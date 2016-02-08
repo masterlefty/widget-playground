@@ -216,6 +216,10 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 gcode = "G38.2 Z-20 F" + fr + "\n";
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
 */
+            if (runCode == "run2") {
+                this.runTab2();
+            }
+            
             }
         },
         
