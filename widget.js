@@ -167,59 +167,42 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 if (runCode == "run1") {
                     // swap button to stop condition
                     $('#' + this.id + ' .btn-touchplaterun1').removeClass("btn-danger").text("Run WCS");
-                    //this.isRunning = false;
+                    this.isRunning = false;
                     
                 } else if (runCode == "run2") {
                     // swap button to stop condition
                     $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
-                    //this.isRunning = false;
+                    this.isRunning = false;
                     
                 }else if (runCode == "run3") {
                     // swap button to stop condition
                     $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
-                    //this.isRunning = false;
+                    this.isRunning = false;
                     
                 } else if (runCode == "run4") {
                      // swap button to stop condition
-                    $('#' + this.id + ' .btn-touchplateru4').removeClass("btn-danger").text("G5x Run4");
-                    //this.isRunning = false;
+                    $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
+                    this.isRunning = false;
 
                 } else {
                      // swap button to stop condition
-                    $('#' + this.id + ' .btn-touchplateru5').removeClass("btn-danger").text("G92 Run5");
-                    //this.isRunning = false; 
+                    $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
+                    this.isRunning = false; 
                 }
-                this.isRunning = false;
-                
+
             } else {
                 
-                if (runCode == "run1") {
-                    //this.isRunning = true;
-                    //swap button to run condition
-                $('#' + this.id + ' .btn-touchplaterun1').addClass("btn-danger").text("Stop");
-                
-                } else if (runCode == "run2") {
-                    // swap button to stop condition
-                    $('#' + this.id + ' .btn-touchplaterun2').addClass("btn-danger").text("Stop");
-                    //this.isRunning = true;
-                
-                } else if (runCode == "run3") {
-                    // swap button to stop condition
-                    $('#' + this.id + ' .btn-touchplaterun3').addClass("btn-danger").text("Stop");
-                    //this.isRunning = true;
-                    
-                } else if (runCode == "run4") {
-                    // swap button to stop condition
-                    $('#' + this.id + ' .btn-touchplaterun4').addClass("btn-danger").text("Stop");
-                    //this.isRunning = true;
-                    
-                }else {
-                    // swap button to stop condition
-                    $('#' + this.id + ' .btn-touchplaterun5').addClass("btn-danger").text("Stop");
-                    //this.isRunning = true;
-                }
                 this.isRunning = true;
+                $('#' + this.id + ' .btn-touchplate' + runCode).addClass("btn-danger").text("Stop");
+                
+                if (runCode == "run2") {
+                    this.runTab2();
+                }
             }
+        },
+        
+        runTab2: function() {
+            console.log("One of the buttons on tab2 was clicked.");
         },
         
         
