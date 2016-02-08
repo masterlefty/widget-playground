@@ -192,6 +192,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             var runCode = event.target.id;
             // logs which button was clicked
             console.log("this is the runCode:", runCode);
+            transferCode = runCode;
             
             if (this.isRunning) {
                 if (runCode == "run1") {
@@ -243,8 +244,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 gcode = "G38.2 Z-20 F" + fr + "\n";
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
 */
-                transferCode = runCode;
-                
             }
         },
         
