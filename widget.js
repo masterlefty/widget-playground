@@ -140,10 +140,17 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             // setup run buttons
             $('#' + this.id + ' .btn-touchplaterun1').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun3').click(this.onRun.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun4').click(this.onRun.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun5').click(this.onRun.bind(this));
+            
+            $('#' + this.id + ' .btn-touchplaterun6').click(this.onRun2.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun7').click(this.onRun2.bind(this));
 
             console.log("I am done being initted.");
         },
         
+        runCode: null,
         isRunning: false,
         
         onRun: function(evt) {
@@ -156,6 +163,63 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             // logs which button was clicked
             console.log("this is the runCode:", runCode);
             
+            if (this.isRunning) {
+                if (runCode == "run1") {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun1').removeClass("btn-danger").text("Run WCS");
+                    //this.isRunning = false;
+                    
+                } else if (runCode == "run2") {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
+                    //this.isRunning = false;
+                    
+                }else if (runCode == "run3") {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
+                    //this.isRunning = false;
+                    
+                } else if (runCode == "run4") {
+                     // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplateru4').removeClass("btn-danger").text("G5x Run4");
+                    //this.isRunning = false;
+
+                } else {
+                     // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplateru5').removeClass("btn-danger").text("G92 Run5");
+                    //this.isRunning = false; 
+                }
+                this.isRunning = false;
+                
+            } else {
+                
+                if (runCode == "run1") {
+                    //this.isRunning = true;
+                    //swap button to run condition
+                $('#' + this.id + ' .btn-touchplaterun1').addClass("btn-danger").text("Stop");
+                
+                } else if (runCode == "run2") {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun2').addClass("btn-danger").text("Stop");
+                    //this.isRunning = true;
+                
+                } else if (runCode == "run3") {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun3').addClass("btn-danger").text("Stop");
+                    //this.isRunning = true;
+                    
+                } else if (runCode == "run4") {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun4').addClass("btn-danger").text("Stop");
+                    //this.isRunning = true;
+                    
+                }else {
+                    // swap button to stop condition
+                    $('#' + this.id + ' .btn-touchplaterun5').addClass("btn-danger").text("Stop");
+                    //this.isRunning = true;
+                }
+                this.isRunning = true;
+            }
         },
         
         
