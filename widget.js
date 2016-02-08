@@ -226,6 +226,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         runTab2: function() {
             console.log("One of the buttons on tab2 was clicked.");
             console.log("checking that transferCode works:", transferCode);
+            $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
         },
         
         watchForProbeStart: function() {
