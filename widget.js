@@ -152,6 +152,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         
         runCode: null,
         isRunning: false,
+        transferCode: null,
         
         onRun: function(evt) {
             // when user clicks the run button
@@ -197,6 +198,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 this.isRunning = true;
                 // swap button to stop
                 $('#' + this.id + ' .btn-touchplate' + runCode).addClass("btn-danger").text("Stop");
+                console.log("the transfercode is:", transferCode);
 /*                
                 // Get user feedrate from input group
                 var fr = $('#' + this.id + ' .frprobe').val();
@@ -224,7 +226,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         watchForProbeStart: function() {
             // We need to subscribe to the /recvline cuz we need to analyze everything coming back
             console.log("checking that transferCode works:", transferCode);
-            chilipeppr.subscribe("/com-chilipeppr-widget-serialport/recvline", this, this.onRecvLineForProbe);
+            //chilipeppr.subscribe("/com-chilipeppr-widget-serialport/recvline", this, this.onRecvLineForProbe);
 
         },
 
