@@ -1,4 +1,4 @@
-/* global requirejs cprequire cpdefine chilipeppr THREE */
+/* global requirejs cprequire cpdefine chilipeppr transferCode */
 // Defining the globals above helps Cloud9 not show warnings for those variables
 
 // ChiliPeppr Widget/Element Javascript
@@ -144,8 +144,8 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun4').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun5').click(this.onRun.bind(this));
             
-            $('#' + this.id + ' .btn-touchplaterun6').click(this.onRun2.bind(this));
-            $('#' + this.id + ' .btn-touchplaterun7').click(this.onRun2.bind(this));
+            //$('#' + this.id + ' .btn-touchplaterun6').click(this.onRun2.bind(this));
+            //$('#' + this.id + ' .btn-touchplaterun7').click(this.onRun2.bind(this));
 
             console.log("I am done being initted.");
         },
@@ -165,45 +165,101 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             
             if (this.isRunning) {
                 if (runCode == "run1") {
-                    // swap button to stop condition
+                    // swap button to run
                     $('#' + this.id + ' .btn-touchplaterun1').removeClass("btn-danger").text("Run WCS");
                     this.isRunning = false;
                     
                 } else if (runCode == "run2") {
-                    // swap button to stop condition
+                    // swap button to run
                     $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
                     this.isRunning = false;
                     
                 }else if (runCode == "run3") {
-                    // swap button to stop condition
+                    // swap button to run
                     $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
                     this.isRunning = false;
                     
                 } else if (runCode == "run4") {
-                     // swap button to stop condition
+                     // swap button to run
                     $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
                     this.isRunning = false;
 
                 } else {
-                     // swap button to stop condition
+                     // swap button to run
                     $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
                     this.isRunning = false; 
                 }
 
             } else {
                 
+                // Run probing process
                 this.isRunning = true;
+                // swap button to stop
                 $('#' + this.id + ' .btn-touchplate' + runCode).addClass("btn-danger").text("Stop");
+/*                
+                // Get user feedrate from input group
+                var fr = $('#' + this.id + ' .frprobe').val();
                 
-                if (runCode == "run2") {
-                    this.runTab2();
-                }
+                // Start watch for circuit closing, subscribe to recvline
+                this.watchForProbeStart();
+               
+                // send command to start probe cycle
+                var id = "tp" + this.gcodeCtr++;
+                
+                //var gcode = "G21 G90 (Use mm and abs coords)\n";
+                var gcode = "G21 G91 (Use mm and rel coords)\n";
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+                id = "tp" + this.gcodeCtr++;
+                gcode = "G38.2 Z-20 F" + fr + "\n";
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+*/
+                transferCode = runCode;
+                
             }
         },
         
         runTab2: function() {
             console.log("One of the buttons on tab2 was clicked.");
         },
+        
+        watchForProbeStart: function() {
+            // We need to subscribe to the /recvline cuz we need to analyze everything coming back
+            console.log("checking that transferCode works:", transferCode);
+            chilipeppr.subscribe("/com-chilipeppr-widget-serialport/recvline", this, this.onRecvLineForProbe);
+
+        },
+
+        watchForProbeEnd: function() {
+            chilipeppr.unsubscribe("/com-chilipeppr-widget-serialport/recvline", this, this.onRecvLineForProbe);
+        },
+        
+        onRecvLineForProbe: function(data) {
+            console.log("onRecvLineForProbe. data:", data);
+        
+            // the data we're looking for is:
+            // {"prb":{"e":1,"z":-7.844}}
+        
+            // make sure it's the data we want
+            if (!('dataline' in data)) {
+                console.log("did not get dataline in data. returning.");
+                return;
+            }
+        
+            // let's make sure it's json
+            var json = $.parseJSON(data.dataline);
+        
+            // sometimes we get {"r":{"prb"  instead of {"prb": so just
+            // detect and remap
+            if ('r' in json && 'prb' in json.r) json = json.r;
+        
+            if ('prb' in json && 'e' in json.prb && 'z' in json.prb) {
+                // yes, it's data for the probe ending
+        
+                // now do all the final steps now that we got our data
+                this.onAfterProbeDone(json.prb);
+            }
+        },
+
         
         
         /**
