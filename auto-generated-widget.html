@@ -248,9 +248,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 // Start watch for circuit closing, subscribe to recvline
                 this.watchForProbeStart();
                
-                // send command to start probe cycle
-                var id = "tp" + this.gcodeCtr++;
-                
                 // G30 Probe cycle runs an additional routine to move the head
                 // to the fixed probe position befor running the probe cycle
                 if (transferCode == "run4" || transferCode == "run5") {
@@ -268,7 +265,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 gcode = "G38.2 Z-20 F" + fr + "\n";
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
                 id = "tp" + this.gcodeCtr++;
-                gcode = "G90 \n";
+                gcode = "G90 (return to absolute coords) \n";
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
 
             }
@@ -286,7 +283,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         runCode: null,
         
         onG30: function(evt) {
-            // when user clicks the run button
+            // when user clicks the G30 button
             console.log("user clicked run button. evt:", evt, event.target.id);
             
             // define variable to determine which subroutine to run based on
@@ -379,15 +376,15 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             
             // Cycle stop and swap buttons to run
             this.isRunning = false;
+            var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+            if (isNaN(plateHeight)) plateHeight = 0;
+                console.log("plateHeight:", plateHeight);
 
             if (transferCode == "run1") {
                 // Run WCS (G53) button - Tab 1
                 $('#' + this.id + ' .btn-touchplaterun1').removeClass("btn-danger").text("Run WCS");
                 
                 // Set G53 machine coordinates Z-value to zero
-                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
-                if (isNaN(plateHeight)) plateHeight = 0;
-                console.log("plateHeight:", plateHeight);
                 // create Gcode and send to controller
                 var gcode = "G28.3 Z" + plateHeight + "\n";
                 var id = "tp" + this.gcodeCtr++;
@@ -399,9 +396,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
                 
                 // Set G5x offset
-                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
-                if (isNaN(plateHeight)) plateHeight = 0;
-                console.log("plateHeight:", plateHeight, "probeData.z", probeData.z);
                 // Set the G92 offset value
                 var zoffset = probeData.z - plateHeight;
                 // create Gcode and send to controller
@@ -415,9 +409,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
                 
                 // Set the G5x offset via G92
-                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
-                if (isNaN(plateHeight)) plateHeight = 0;
-                console.log("plateHeight:", plateHeight);
                 var gcode = "G92 Z" + plateHeight;
                 var id = "tp" + this.gcodeCtr++;
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
@@ -428,9 +419,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
                 
                 // Set G5x offset
-                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
-                if (isNaN(plateHeight)) plateHeight = 0;
-                console.log("plateHeight:", plateHeight, "probeData.z", probeData.z);
                 // Set the G92 offset value
                 var zoffset = probeData.z - plateHeight;
                 // create Gcode and send to controller
@@ -443,9 +431,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
                 
                 // Set the G5x offset via G92
-                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
-                if (isNaN(plateHeight)) plateHeight = 0;
-                console.log("plateHeight:", plateHeight);
                 var gcode = "G92 Z" + plateHeight;
                 var id = "tp" + this.gcodeCtr++;
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
