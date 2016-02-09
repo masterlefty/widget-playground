@@ -174,15 +174,16 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun4').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun5').click(this.onRun.bind(this));
             
-            //$('#' + this.id + ' .btn-touchplaterun6').click(this.onRun2.bind(this));
-            //$('#' + this.id + ' .btn-touchplaterun7').click(this.onRun2.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun6').click(this.onG30.bind(this));
+            $('#' + this.id + ' .btn-touchplaterun7').click(this.onG30.bind(this));
 
             console.log("I am done being initted.");
         },
         
-        runCode: null,
+        gcodeCtr: 0,
         isRunning: false,
         transferCode: null,
+        runCode: null,
         
         onRun: function(evt) {
             // when user clicks the run button
@@ -193,45 +194,56 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             var runCode = event.target.id;
             // logs which button was clicked
             console.log("this is the runCode:", runCode);
+            
+            // transfer runCode to read only global variable
             transferCode = runCode;
             
             if (this.isRunning) {
+
+                // Stop controller
+                var id = "tp" + this.gcodeCtr++;
+                var gcode = "!\n";
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+
+                
+                // Swap clicked button to run
                 if (runCode == "run1") {
-                    // swap button to run
+                    // Run WCS (G53) button
                     $('#' + this.id + ' .btn-touchplaterun1').removeClass("btn-danger").text("Run WCS");
                     this.isRunning = false;
                     
                 } else if (runCode == "run2") {
-                    // swap button to run
+                    // Run G5x (MCS) button for floating touchplate
                     $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
                     this.isRunning = false;
                     
                 }else if (runCode == "run3") {
-                    // swap button to run
+                    // Run G92 (MCS) button for floating touchplate
                     $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
                     this.isRunning = false;
                     
                 } else if (runCode == "run4") {
-                     // swap button to run
+                     // Run G5x (MCS) button for fixed touchplate
                     $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
                     this.isRunning = false;
 
                 } else {
-                     // swap button to run
+                     // Run G92 (MCS) button for fixed touchplate
                     $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
                     this.isRunning = false; 
                 }
 
             } else {
                 
-                // Run probing process
+                // Start probing process
+                
                 this.isRunning = true;
-                // swap button to stop
+                // Start controller and swap button to stop
                 $('#' + this.id + ' .btn-touchplate' + runCode).addClass("btn-danger").text("Stop");
-                console.log("the transfercode is:", transferCode);
-/*                
+                
                 // Get user feedrate from input group
                 var fr = $('#' + this.id + ' .frprobe').val();
+                var zclr = $('#' + this.id + ' .z-clearance').val();
                 
                 // Start watch for circuit closing, subscribe to recvline
                 this.watchForProbeStart();
@@ -239,31 +251,85 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 // send command to start probe cycle
                 var id = "tp" + this.gcodeCtr++;
                 
-                //var gcode = "G21 G90 (Use mm and abs coords)\n";
+                // G30 Probe cycle runs an additional routine to move the head
+                // to the fixed probe position befor running the probe cycle
+                if (transferCode == "run4" || transferCode == "run5") {
+                    // Raise head to clearance height and move to G30 position
+                    id = "tp" + this.gcodeCtr++;
+                    gcode = "G21 G91 G30 Z" + zclr + "\n";
+                    chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+                }
+                
+                // Run the G38.2 probe cycle for all buttons
+                id = "tp" + this.gcodeCtr++;
                 var gcode = "G21 G91 (Use mm and rel coords)\n";
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
                 id = "tp" + this.gcodeCtr++;
                 gcode = "G38.2 Z-20 F" + fr + "\n";
                 chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-*/
-            if (runCode == "run2") {
-                this.runTab2();
-            }
-            
+                id = "tp" + this.gcodeCtr++;
+                gcode = "G90 \n";
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+
             }
         },
         
-        runTab2: function() {
-            console.log("One of the buttons on tab2 was clicked.");
-            console.log("checking that transferCode works:", transferCode);
-            $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
+        /**
+         * Call this method when the G30 define button is clicked on tab 4.
+         * The G30 Tab 4 will create a defined position, through a G30.1 command 
+         * that locates a fixed touchplate. Send G30.1 - This will "remember" the 
+         * absolute position. This position remains constant regardless of what
+         * coordinate system is in effect.
+         */
+        gcodeCtr: 0,
+        isRunning: false,
+        runCode: null,
+        
+        onG30: function(evt) {
+            // when user clicks the run button
+            console.log("user clicked run button. evt:", evt, event.target.id);
+            
+            // define variable to determine which subroutine to run based on
+            // user selection through the tabs
+            var runCode = event.target.id;
+            // logs which button was clicked
+            console.log("this is the runCode:", runCode);
+            
+            if (this.isRunning) {
+                
+                // Stop controller
+                var id = "tp" + this.gcodeCtr++;
+                var gcode = "!\n";
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+                
+                // Swap selected button to run
+                    $('#' + this.id + ' .btn-touchplaterun6').removeClass("btn-danger").text("G30 Fixed Location");
+                    this.isRunning = false;
+            } else {
+                
+                // Start process
+                this.isRunning = true;
+                
+                // Swap selected button to stop
+                $('#' + this.id + ' .btn-touchplaterun6').addClass("btn-danger").text("Stop");
+                
+                // Send command to set the G30 location
+                id = "tp" + this.gcodeCtr++;
+                gcode = "G30.1 \n";
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+                
+                // Swap selected button to run
+                    $('#' + this.id + ' .btn-touchplaterun6').removeClass("btn-danger").text("G30 Fixed Location");
+                    this.isRunning = false;
+            }
         },
+        
+        
         
         watchForProbeStart: function() {
             // We need to subscribe to the /recvline cuz we need to analyze everything coming back
             console.log("checking that transferCode works:", transferCode);
-            //chilipeppr.subscribe("/com-chilipeppr-widget-serialport/recvline", this, this.onRecvLineForProbe);
-
+            chilipeppr.subscribe("/com-chilipeppr-widget-serialport/recvline", this, this.onRecvLineForProbe);
         },
 
         watchForProbeEnd: function() {
@@ -295,6 +361,105 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 // now do all the final steps now that we got our data
                 this.onAfterProbeDone(json.prb);
             }
+        },
+        
+        onAfterProbeDone: function(probeData) {
+            // probeData should be of the format
+            // {"e":1,"z":-7.844}
+            console.log("onAfterProbeDone. probeData:", probeData);
+            
+            // unsub so we stop getting events
+            this.watchForProbeEnd();
+            
+            // play good beep
+            this.audio.play();
+            
+            // Stop controller upon completion of probing cycle
+            console.log("The transferCode is:", transferCode);
+            
+            // Cycle stop and swap buttons to run
+            this.isRunning = false;
+
+            if (transferCode == "run1") {
+                // Run WCS (G53) button - Tab 1
+                $('#' + this.id + ' .btn-touchplaterun1').removeClass("btn-danger").text("Run WCS");
+                
+                // Set G53 machine coordinates Z-value to zero
+                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+                if (isNaN(plateHeight)) plateHeight = 0;
+                console.log("plateHeight:", plateHeight);
+                // create Gcode and send to controller
+                var gcode = "G28.3 Z" + plateHeight + "\n";
+                var id = "tp" + this.gcodeCtr++;
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+            }
+            
+            else if (transferCode == "run2") {
+                // Run G5x (MCS) button for floating touchplate - Tab 2
+                $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
+                
+                // Set G5x offset
+                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+                if (isNaN(plateHeight)) plateHeight = 0;
+                console.log("plateHeight:", plateHeight, "probeData.z", probeData.z);
+                // Set the G92 offset value
+                var zoffset = probeData.z - plateHeight;
+                // create Gcode and send to controller
+                var gcode = "G10 L2 P1 Z" + zoffset + "\n";
+                var id = "tp" + this.gcodeCtr++;
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+            }
+            
+            else if (transferCode == "run3") {
+                // Run G92 (MCS) button for floating touchplate - Tab 2
+                $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
+                
+                // Set the G5x offset via G92
+                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+                if (isNaN(plateHeight)) plateHeight = 0;
+                console.log("plateHeight:", plateHeight);
+                var gcode = "G92 Z" + plateHeight;
+                var id = "tp" + this.gcodeCtr++;
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+                
+            }
+            else if (transferCode == "run4") {
+                // Run G5x (MCS) button for fixed touchplate - Tab 3
+                $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
+                
+                // Set G5x offset
+                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+                if (isNaN(plateHeight)) plateHeight = 0;
+                console.log("plateHeight:", plateHeight, "probeData.z", probeData.z);
+                // Set the G92 offset value
+                var zoffset = probeData.z - plateHeight;
+                // create Gcode and send to controller
+                var gcode = "G10 L2 P1 Z" + zoffset + "\n";
+                var id = "tp" + this.gcodeCtr++;
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode})
+            }
+            else {
+                // Run G92 (MCS) button for fixed touchplate - Tab 3
+                $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
+                
+                // Set the G5x offset via G92
+                var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+                if (isNaN(plateHeight)) plateHeight = 0;
+                console.log("plateHeight:", plateHeight);
+                var gcode = "G92 Z" + plateHeight;
+                var id = "tp" + this.gcodeCtr++;
+                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+            }
+            
+            // Back tool off of touch plate (2mm)
+            var gcode = "G91 G0 Z2\n";
+    		var id = "tp" + this.gcodeCtr++;
+	    	chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
+	    	
+	    	// return to absolute coordinate system
+    		var gcode = "G90\n";
+	    	var id = "tp" + this.gcodeCtr++;
+		    chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
         },
 
         
@@ -490,10 +655,10 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             <button type="button" id="run4" class="btn xbtn-xs btn-primary btn-touchplaterun4" style="width:40%;">G5x Run4</button>
             <button type="button" id="run5" class="btn xbtn-xs btn-primary btn-touchplaterun5" style="width:40%;">G92 Run5</button>
             <p></p>
-            <!--
-            <button type="button" id="run6" class="btn xbtn-xs btn-primary btn-touchplaterun6" style="width:40%;">G30 Current Position</button>
-            <button type="button" id="run7" class="btn xbtn-xs btn-primary btn-touchplaterun7" style="width:40%;">G30 by value</button>
-            -->
+            
+            <button type="button" id="run6" class="btn xbtn-xs btn-primary btn-touchplaterun6" style="width:40%;">G30 Fixed Location</button>
+            
+            
         </div>
     </div>
 
