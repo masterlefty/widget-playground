@@ -153,6 +153,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         
         onCoordUpdate: function(coords) {
             console.log("onCoordUpdate.coords", coords);
+            alert("the coordinate is:" +coords);
         },
         
         gcodeCtr: 0,
