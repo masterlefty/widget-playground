@@ -153,7 +153,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         
         lastCoords: {
             coord: null, // G54, G55, etc
-            coordNum: null // 1, 2, etc
+            coordNum: null // 54, 55, etc
         },
         
         onCoordsUpdate: function(coords) {
@@ -165,8 +165,8 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 $('#' + this.id + ' .btn-touchplaterun2').text(coords.coord + " Run");
                 
                 this.lastCoords = coords;
-                gCoordNum = coords.coordNum;
-                gCoord = coords.coord;
+                gCoordNum = coords.coordNum; //54, 55, etc
+                gCoord = coords.coord; // G54, G55, etc
             }
         },
         
@@ -207,7 +207,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                     
                 } else if (runCode == "run2") {
                     // Run G5x (MCS) button for floating touchplate
-                    $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
+                    $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text(gCoord + " Run");
                     this.isRunning = false;
                     
                 }else {
@@ -319,7 +319,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             
             else if (transferCode == "run2") {
                 // Run G5x (MCS) button for floating touchplate - Tab 2
-                $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
+                $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text(gCoord + "  Run");
                 
                 // Set G5x offset
                 // Set the G92 offset value
@@ -342,7 +342,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             }
             else if (transferCode == "run4") {
                 // Run G5x (MCS) button for fixed touchplate - Tab 3
-                $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
+                $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text(gCoord + " Run4");
                 
                 // Set G5x offset
                 // Set the G92 offset value
