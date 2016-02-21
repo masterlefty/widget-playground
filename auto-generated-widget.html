@@ -20,18 +20,18 @@
    
 }
 
-#com-chilipeppr-widget-touchplate .nav-tabs {
+#com-chilipeppr-widget-playground .nav-tabs {
     padding: 2px 6px;
 }
 
-#com-chilipeppr-widget-touchplate .td-1L {
+#com-chilipeppr-widget-playground .td-1L {
    width: 50%;
    padding: 5px;
    padding-top: 10px;
    font-size: 13px;
 }
 
-#com-chilipeppr-widget-touchplate .td-1R {
+#com-chilipeppr-widget-playground .td-1R {
     padding: 10px;
 }
     </style>
@@ -186,7 +186,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun3').click(this.onRun.bind(this));
             
-            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this,this.onCoordUpdate);
+            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this.onCoordUpdate);
 
             console.log("I am done being initted.");
         },
@@ -196,10 +196,9 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             coordNum: null,
         },
         
-        onCoordUpdate: function(coords) {
-            console.log("onCoordUpdate.coords", coords);
-            alert("the coordinate is:" + coords);
-            this.lastCoords = coords;
+        onCoordUpdate: function(coordNum) {
+            console.log("onCoordUpdate. coordNum:", coordNum);
+            alert("the coordinate # is: " + coordNum);
         },
         
         gcodeCtr: 0,
@@ -606,6 +605,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                     <dd>Line 1</dd>
                     <button type="button" id="run1" class="btn xbtn-xs btn primary btn-touchplaterun1" style="width:80%;">Run</button>
                         <p>Enter Feedrate and Height input fields</p>
+                        <p>Coords <span class="stat-coords">-</span></p>
                 </div>
 
                 <!-- Tab 2 -->
