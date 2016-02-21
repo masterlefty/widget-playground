@@ -159,11 +159,9 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         onCoordsUpdate: function(coords) {
             console.log("onCoordUpdate. coords:", coords);
             if (coords.coord != this.lastCoords.coord) {
-                $('.com-chilipeppr-widget-playground-coords').text(coords.coord);
+                $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
                 this.lastCoords = coords;
             }
-            
-            alert("the coordinate # is: " + coords);
         },
         
         gcodeCtr: 0,
