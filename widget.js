@@ -122,6 +122,10 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
          * or elements, that this widget/element subscribes to.
          */
         foreignSubscribe: {
+            '/com-chilipeppr-interface-cnccontroller/units': 'Track which unit mode is active. The walue is normalized as {units: \"mm\"} or {units: \"inch\"}',
+            '/com-chilipeppr-interface-cnccontroller/coords': " Track which is coordinate system is active: G54, G55, etc. The value is {coord:\"g55\", coordNum: 55} or for G92 {coord:\"g92\", coordNum: 92} or for machine {coord:\"g53\", coordNum: 53}",
+            '/com-chilipeppr-interface-cnccontroller/requestCoords': 'Send in this signal to request a callback signal of "/com-chilipeppr-interface-cnccontroller/coords" to be sent back. You wil be sent whatever value this widget currently has stored as the last coordinates.'
+
             // Define a key:value pair here as strings to document what signals you subscribe to
             // that are owned by foreign/other widgets.
             // '/com-chilipeppr-elem-dragdrop/ondropped': 'Example: We subscribe to this signal at a higher priority to intercept the signal. We do not let it propagate by returning false.'
@@ -145,7 +149,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun5').click(this.onRun.bind(this));
             
             $('#' + this.id + ' .btn-touchplaterun6').click(this.onG30.bind(this));
-            $('#' + this.id + ' .btn-touchplaterun7').click(this.onG30.bind(this));
 
             console.log("I am done being initted.");
         },
@@ -167,6 +170,9 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             
             // transfer runCode to read only global variable
             transferCode = runCode;
+            
+            // Stop controller upon completion of probing cycle
+            console.log("The transferCode is:", transferCode);
             
             if (this.isRunning) {
 
@@ -220,7 +226,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                
                 // G30 Probe cycle runs an additional routine to move the head
                 // to the fixed probe position befor running the probe cycle
-                if (transferCode == "run4" || transferCode == "run5") {
+                if (runCode == "run4" || runCode == "run5") {
                     // Raise head to clearance height and move to G30 position
                     id = "tp" + this.gcodeCtr++;
                     gcode = "G21 G91 G30 Z" + zclr + "\n";
