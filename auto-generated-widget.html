@@ -38,7 +38,7 @@
 
     <script type='text/javascript'>
     //<![CDATA[
-/* global requirejs cprequire cpdefine chilipeppr transferCode */
+/* global requirejs cprequire cpdefine chilipeppr transferCode gCoord */
 // Defining the globals above helps Cloud9 not show warnings for those variables
 
 // ChiliPeppr Widget/Element Javascript
@@ -192,16 +192,17 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         },
         
         lastCoords: {
-            coord: null,
-            coordNum: null
+            coord: null, // G54, G55, etc
+            coordNum: null // 1, 2, etc
         },
         
         onCoordsUpdate: function(coords) {
             console.log("onCoordUpdate. coords:", coords);
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
-                $('.com-chilipeppr-widget-playground-btn-touchplaterun2').text("G"+coords.coordNum+" Run");
+                $('#com-chilipeppr-widget-playground-tab2').text(coords.coord +" Float");
                 this.lastCoords = coords;
+                gCoord = coords.coordNum;
             }
         },
         
