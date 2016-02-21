@@ -146,14 +146,24 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun3').click(this.onRun.bind(this));
             
-            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this.onCoordUpdate);
+            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this.onCoordUpdate.bind(this));
 
             console.log("I am done being initted.");
         },
         
-        onCoordUpdate: function(coord, coordNum) {
-            console.log("onCoordUpdate. coordNum:", coord, coordNum);
-            alert("the coordinate # is: " + coordNum);
+        lastCoords: {
+            coord: null,
+            coordNum: null
+        },
+        
+        onCoordUpdate: function(coords) {
+            console.log("onCoordUpdate. coords:", coords);
+            if (coords.coord != this.lastCoords.coord) {
+                $('.com-chilipeppr-widget-playground-coords').text(coords.coord);
+                this.lastCoords = coords;
+            }
+            
+            alert("the coordinate # is: " + coords);
         },
         
         gcodeCtr: 0,
