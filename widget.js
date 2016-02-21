@@ -1,4 +1,4 @@
-/* global requirejs cprequire cpdefine chilipeppr transferCode gCoord */
+/* global requirejs cprequire cpdefine chilipeppr transferCode gCoord gCoordNum */
 // Defining the globals above helps Cloud9 not show warnings for those variables
 
 // ChiliPeppr Widget/Element Javascript
@@ -162,8 +162,11 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
                 $('.com-chilipeppr-widget-playground-tab2-name').text(coords.coord +" Float");
                 $('.com-chilipeppr-widget-playground-tab3-name').text(coords.coord +" Fixed");
+                $('#' + this.id + ' .btn-touchplaterun2').text(coords.coord + " Run");
+                
                 this.lastCoords = coords;
-                gCoord = coords.coordNum;
+                gCoordNum = coords.coordNum;
+                gCoord = coords.coord;
             }
         },
         
@@ -175,7 +178,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         onRun: function(evt) {
             // when user clicks the run button
             console.log("user clicked run button. evt:", evt, event.target.id);
-            alert("the coordinate number is: " + gCoord);
             
             // define variable to determine which subroutine to run based on
             // user selection through the tabs
