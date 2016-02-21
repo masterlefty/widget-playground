@@ -160,6 +160,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             console.log("onCoordUpdate. coords:", coords);
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
+                $('.com-chilipeppr-widget-playground-btn-touchplaterun2').text("G"+coords.coordNum+" Run");
                 this.lastCoords = coords;
             }
         },
