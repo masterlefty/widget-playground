@@ -160,7 +160,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             console.log("onCoordUpdate. coords:", coords);
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
-                $('#com-chilipeppr-widget-playground-tab2').text(coords.coord +" Float");
+                $('.com-chilipeppr-widget-playground-tab2-name').text(coords.coord +" Float");
                 this.lastCoords = coords;
                 gCoord = coords.coordNum;
             }

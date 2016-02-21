@@ -200,7 +200,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             console.log("onCoordUpdate. coords:", coords);
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
-                $('#com-chilipeppr-widget-playground-tab2').text(coords.coord +" Float");
+                $('.com-chilipeppr-widget-playground-tab2-name').text(coords.coord +" Float");
                 this.lastCoords = coords;
                 gCoord = coords.coordNum;
             }
@@ -598,6 +598,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 <li class="active">
                     <a href="#com-chilipeppr-widget-playground-tab1" role="tab" data-toggle="tab">MCS G53</a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab2" role="tab" data-toggle="tab">G5x Float</a></li>
+                     <span class = "com-chilipeppr-widget-playground-tab2-name">G5x Float</span></a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab3" role="tab" data-toggle="tab">G5x Fixed</a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab4" role="tab" data-toggle="tab">G30</a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab5" role="tab" data-toggle="tab">Notes</a></li>
@@ -610,7 +611,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                     <dd>Line 1</dd>
                     <button type="button" id="run1" class="btn xbtn-xs btn primary btn-touchplaterun1" style="width:80%;">Run</button>
                         <p>Enter Feedrate and Height input fields</p>
-                        <p>Coords d<span class="com-chilipeppr-widget-playground-coords">G#</span></p>
+                        <p>Coords G-<span class="com-chilipeppr-widget-playground-coords">G#</span></p>
                 </div>
 
                 <!-- Tab 2 -->
