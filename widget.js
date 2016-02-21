@@ -161,6 +161,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
                 $('.com-chilipeppr-widget-playground-tab2-name').text(coords.coord +" Float");
+                $('.com-chilipeppr-widget-playground-tab3-name').text(coords.coord +" Fixed");
                 this.lastCoords = coords;
                 gCoord = coords.coordNum;
             }
@@ -174,6 +175,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         onRun: function(evt) {
             // when user clicks the run button
             console.log("user clicked run button. evt:", evt, event.target.id);
+            alert("the coordinate number is: " + gCoord);
             
             // define variable to determine which subroutine to run based on
             // user selection through the tabs

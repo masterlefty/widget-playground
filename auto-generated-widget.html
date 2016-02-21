@@ -201,6 +201,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
                 $('.com-chilipeppr-widget-playground-tab2-name').text(coords.coord +" Float");
+                $('.com-chilipeppr-widget-playground-tab3-name').text(coords.coord +" Fixed");
                 this.lastCoords = coords;
                 gCoord = coords.coordNum;
             }
@@ -214,6 +215,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         onRun: function(evt) {
             // when user clicks the run button
             console.log("user clicked run button. evt:", evt, event.target.id);
+            alert("the coordinate number is: " + gCoord);
             
             // define variable to determine which subroutine to run based on
             // user selection through the tabs
@@ -598,7 +600,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 <li class="active">
                     <a href="#com-chilipeppr-widget-playground-tab1" role="tab" data-toggle="tab">MCS G53</a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab2" role="tab" data-toggle="tab"><span class = "com-chilipeppr-widget-playground-tab2-name">G5x Float</span></a></li>
-                <li><a href="#com-chilipeppr-widget-playground-tab3" role="tab" data-toggle="tab">G5x Fixed</a></li>
+                <li><a href="#com-chilipeppr-widget-playground-tab3" role="tab" data-toggle="tab"><span class = "com-chilipeppr-widget-playground-tab3-name">G5x Fixed</span></a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab4" role="tab" data-toggle="tab">G30</a></li>
                 <li><a href="#com-chilipeppr-widget-playground-tab5" role="tab" data-toggle="tab">Notes</a></li>
             </ul>
