@@ -151,8 +151,8 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             console.log("I am done being initted.");
         },
         
-        onCoordUpdate: function(coordNum) {
-            console.log("onCoordUpdate. coordNum:", coordNum);
+        onCoordUpdate: function(coord, coordNum) {
+            console.log("onCoordUpdate. coordNum:", coord, coordNum);
             alert("the coordinate # is: " + coordNum);
         },
         
