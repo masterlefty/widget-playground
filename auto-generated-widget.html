@@ -191,9 +191,15 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             console.log("I am done being initted.");
         },
         
+        lastCoords: {
+            coord: null,
+            coordNum: null,
+        },
+        
         onCoordUpdate: function(coords) {
             console.log("onCoordUpdate.coords", coords);
-            alert("the coordinate is:" +coords);
+            alert("the coordinate is:" + coords);
+            this.lastCoords = coords;
         },
         
         gcodeCtr: 0,
