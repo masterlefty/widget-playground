@@ -145,12 +145,14 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun1').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun3').click(this.onRun.bind(this));
-            $('#' + this.id + ' .btn-touchplaterun4').click(this.onRun.bind(this));
-            $('#' + this.id + ' .btn-touchplaterun5').click(this.onRun.bind(this));
             
-            $('#' + this.id + ' .btn-touchplaterun6').click(this.onG30.bind(this));
+            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this,this.onCoordUpdate);
 
             console.log("I am done being initted.");
+        },
+        
+        onCoordUpdate: function(coords) {
+            console.log("onCoordUpdate.coords", coords);
         },
         
         gcodeCtr: 0,
@@ -193,20 +195,10 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                     $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
                     this.isRunning = false;
                     
-                }else if (runCode == "run3") {
+                }else {
                     // Run G92 (MCS) button for floating touchplate
                     $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
                     this.isRunning = false;
-                    
-                } else if (runCode == "run4") {
-                     // Run G5x (MCS) button for fixed touchplate
-                    $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
-                    this.isRunning = false;
-
-                } else {
-                     // Run G92 (MCS) button for fixed touchplate
-                    $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
-                    this.isRunning = false; 
                 }
 
             } else {
@@ -217,22 +209,9 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 // Start controller and swap button to stop
                 $('#' + this.id + ' .btn-touchplate' + runCode).addClass("btn-danger").text("Stop");
                 
-                // Get user feedrate from input group
-                var fr = $('#' + this.id + ' .frprobe').val();
-                var zclr = $('#' + this.id + ' .z-clearance').val();
-                
                 // Start watch for circuit closing, subscribe to recvline
                 this.watchForProbeStart();
                
-                // G30 Probe cycle runs an additional routine to move the head
-                // to the fixed probe position befor running the probe cycle
-                if (runCode == "run4" || runCode == "run5") {
-                    // Raise head to clearance height and move to G30 position
-                    id = "tp" + this.gcodeCtr++;
-                    gcode = "G21 G91 G30 Z" + zclr + "\n";
-                    chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-                }
-                
                 // Run the G38.2 probe cycle for all buttons
                 id = "tp" + this.gcodeCtr++;
                 var gcode = "G21 G91 (Use mm and rel coords)\n";
@@ -254,50 +233,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
          * absolute position. This position remains constant regardless of what
          * coordinate system is in effect.
          */
-        gcodeCtr: 0,
-        isRunning: false,
-        runCode: null,
-        
-        onG30: function(evt) {
-            // when user clicks the G30 button
-            console.log("user clicked run button. evt:", evt, event.target.id);
-            
-            // define variable to determine which subroutine to run based on
-            // user selection through the tabs
-            var runCode = event.target.id;
-            // logs which button was clicked
-            console.log("this is the runCode:", runCode);
-            
-            if (this.isRunning) {
-                
-                // Stop controller
-                var id = "tp" + this.gcodeCtr++;
-                var gcode = "!\n";
-                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-                
-                // Swap selected button to run
-                    $('#' + this.id + ' .btn-touchplaterun6').removeClass("btn-danger").text("G30 Fixed Location");
-                    this.isRunning = false;
-            } else {
-                
-                // Start process
-                this.isRunning = true;
-                
-                // Swap selected button to stop
-                $('#' + this.id + ' .btn-touchplaterun6').addClass("btn-danger").text("Stop");
-                
-                // Send command to set the G30 location
-                id = "tp" + this.gcodeCtr++;
-                gcode = "G30.1 \n";
-                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-                
-                // Swap selected button to run
-                    $('#' + this.id + ' .btn-touchplaterun6').removeClass("btn-danger").text("G30 Fixed Location");
-                    this.isRunning = false;
-            }
-        },
-        
-        
         
         watchForProbeStart: function() {
             // We need to subscribe to the /recvline cuz we need to analyze everything coming back
@@ -352,7 +287,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             
             // Cycle stop and swap buttons to run
             this.isRunning = false;
-            var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+            var plateHeight = $('#com-chilipeppr-widget-playground .heightplate').val();
             if (isNaN(plateHeight)) plateHeight = 0;
                 console.log("plateHeight:", plateHeight);
 

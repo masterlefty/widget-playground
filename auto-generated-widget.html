@@ -185,12 +185,14 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun1').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun3').click(this.onRun.bind(this));
-            $('#' + this.id + ' .btn-touchplaterun4').click(this.onRun.bind(this));
-            $('#' + this.id + ' .btn-touchplaterun5').click(this.onRun.bind(this));
             
-            $('#' + this.id + ' .btn-touchplaterun6').click(this.onG30.bind(this));
+            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this,this.onCoordUpdate);
 
             console.log("I am done being initted.");
+        },
+        
+        onCoordUpdate: function(coords) {
+            console.log("onCoordUpdate.coords", coords);
         },
         
         gcodeCtr: 0,
@@ -233,20 +235,10 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                     $('#' + this.id + ' .btn-touchplaterun2').removeClass("btn-danger").text("G5x Run");
                     this.isRunning = false;
                     
-                }else if (runCode == "run3") {
+                }else {
                     // Run G92 (MCS) button for floating touchplate
                     $('#' + this.id + ' .btn-touchplaterun3').removeClass("btn-danger").text("G92 Run");
                     this.isRunning = false;
-                    
-                } else if (runCode == "run4") {
-                     // Run G5x (MCS) button for fixed touchplate
-                    $('#' + this.id + ' .btn-touchplaterun4').removeClass("btn-danger").text("G5x Run4");
-                    this.isRunning = false;
-
-                } else {
-                     // Run G92 (MCS) button for fixed touchplate
-                    $('#' + this.id + ' .btn-touchplaterun5').removeClass("btn-danger").text("G92 Run5");
-                    this.isRunning = false; 
                 }
 
             } else {
@@ -257,22 +249,9 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 // Start controller and swap button to stop
                 $('#' + this.id + ' .btn-touchplate' + runCode).addClass("btn-danger").text("Stop");
                 
-                // Get user feedrate from input group
-                var fr = $('#' + this.id + ' .frprobe').val();
-                var zclr = $('#' + this.id + ' .z-clearance').val();
-                
                 // Start watch for circuit closing, subscribe to recvline
                 this.watchForProbeStart();
                
-                // G30 Probe cycle runs an additional routine to move the head
-                // to the fixed probe position befor running the probe cycle
-                if (runCode == "run4" || runCode == "run5") {
-                    // Raise head to clearance height and move to G30 position
-                    id = "tp" + this.gcodeCtr++;
-                    gcode = "G21 G91 G30 Z" + zclr + "\n";
-                    chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-                }
-                
                 // Run the G38.2 probe cycle for all buttons
                 id = "tp" + this.gcodeCtr++;
                 var gcode = "G21 G91 (Use mm and rel coords)\n";
@@ -294,50 +273,6 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
          * absolute position. This position remains constant regardless of what
          * coordinate system is in effect.
          */
-        gcodeCtr: 0,
-        isRunning: false,
-        runCode: null,
-        
-        onG30: function(evt) {
-            // when user clicks the G30 button
-            console.log("user clicked run button. evt:", evt, event.target.id);
-            
-            // define variable to determine which subroutine to run based on
-            // user selection through the tabs
-            var runCode = event.target.id;
-            // logs which button was clicked
-            console.log("this is the runCode:", runCode);
-            
-            if (this.isRunning) {
-                
-                // Stop controller
-                var id = "tp" + this.gcodeCtr++;
-                var gcode = "!\n";
-                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-                
-                // Swap selected button to run
-                    $('#' + this.id + ' .btn-touchplaterun6').removeClass("btn-danger").text("G30 Fixed Location");
-                    this.isRunning = false;
-            } else {
-                
-                // Start process
-                this.isRunning = true;
-                
-                // Swap selected button to stop
-                $('#' + this.id + ' .btn-touchplaterun6').addClass("btn-danger").text("Stop");
-                
-                // Send command to set the G30 location
-                id = "tp" + this.gcodeCtr++;
-                gcode = "G30.1 \n";
-                chilipeppr.publish("/com-chilipeppr-widget-serialport/jsonSend", {Id: id, D: gcode});
-                
-                // Swap selected button to run
-                    $('#' + this.id + ' .btn-touchplaterun6').removeClass("btn-danger").text("G30 Fixed Location");
-                    this.isRunning = false;
-            }
-        },
-        
-        
         
         watchForProbeStart: function() {
             // We need to subscribe to the /recvline cuz we need to analyze everything coming back
@@ -392,7 +327,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             
             // Cycle stop and swap buttons to run
             this.isRunning = false;
-            var plateHeight = $('#com-chilipeppr-widget-touchplate .heightplate').val();
+            var plateHeight = $('#com-chilipeppr-widget-playground .heightplate').val();
             if (isNaN(plateHeight)) plateHeight = 0;
                 console.log("plateHeight:", plateHeight);
 
@@ -627,14 +562,10 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
 </head>
 
 <body>
-    <div id="com-chilipeppr-widget-touchplate" class="panel panel-default">
+    <div id="com-chilipeppr-widget-playground" class="panel panel-default">
         <div class="panel-heading ">
 
             <div class="btn-toolbar pull-right" role="toolbar">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-xs btn-default btn-sayhello" data-delay="1000" data-animation="true" data-placement="auto" data-container="body" data-trigger="hover" data-title="Say Hello" data-content="Generate a hello message">Say Hello
-                    </button>
-                </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-xs btn-default hidebody"><span class="glyphicon glyphicon-chevron-up"></span>
                     </button>
@@ -654,101 +585,45 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             <!-- Nav tabs -->
             <ul class="nav nav-tabs" role="tablist">
                 <li class="active">
-                    <a href="#com-chilipeppr-widget-touchplate-tab1" role="tab" data-toggle="tab">MCS G53</a></li>
-                <li><a href="#com-chilipeppr-widget-touchplate-tab2" role="tab" data-toggle="tab">G5x Float</a></li>
-                <li><a href="#com-chilipeppr-widget-touchplate-tab3" role="tab" data-toggle="tab">G5x Fixed</a></li>
-                <li><a href="#com-chilipeppr-widget-touchplate-tab4" role="tab" data-toggle="tab">G30</a></li>
-                <li><a href="#com-chilipeppr-widget-touchplate-tab5" role="tab" data-toggle="tab">Notes</a></li>
+                    <a href="#com-chilipeppr-widget-playground-tab1" role="tab" data-toggle="tab">MCS G53</a></li>
+                <li><a href="#com-chilipeppr-widget-playground-tab2" role="tab" data-toggle="tab">G5x Float</a></li>
+                <li><a href="#com-chilipeppr-widget-playground-tab3" role="tab" data-toggle="tab">G5x Fixed</a></li>
+                <li><a href="#com-chilipeppr-widget-playground-tab4" role="tab" data-toggle="tab">G30</a></li>
+                <li><a href="#com-chilipeppr-widget-playground-tab5" role="tab" data-toggle="tab">Notes</a></li>
             </ul>
             <!-- Tab panes -->
 
             <!-- Tab 1 -->
-            <div class="tab-content active">
-                <div class="tab-pane" id="com-chilipeppr-widget-touchplate-tab1">
-                    <table class="table table-condensed table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class = "td-1L">
-                                    <dd>Line 1</dd>
-                                </td>
-                                <td class = "td-1R">
-                                    <button type="button" id="run1" class="btn xbtn-xs btn primary btn-touchplaterun1" style="width:100%;">Run</button>
-                                    <p>Enter Feedrate and Height input fields</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="tab-content">
+                <div class="tab-pane active" id="com-chilipeppr-widget-playground-tab1">
+                    <dd>Line 1</dd>
+                    <button type="button" id="run1" class="btn xbtn-xs btn primary btn-touchplaterun1" style="width:80%;">Run</button>
+                        <p>Enter Feedrate and Height input fields</p>
                 </div>
 
                 <!-- Tab 2 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-touchplate-tab2">
-                    <table class="table table-condensed table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class = "td-1L">
-                                    <dd>Line 1</dd>
-                                </td>
-                                <td class = "td-1R">
-                                    <button type="button" id="run2" class="btn xbtn-xs btn primary btn-touchplaterun2" style="width:48%;">G5x Run</button>
-                                    <button type="button" id="run3" class="btn xbtn-xs btn-info btn-touchplaterun3" style="width:48%;">G92 Run</button>
-                                    <p>Enter Feedrate and Height input fields</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="tab-pane" id="com-chilipeppr-widget-playground-tab2">
+                    <dd>Line 1</dd>
+                    <button type="button" id="run2" class="btn xbtn-xs btn primary btn-touchplaterun2" style="width:48%;">G5x Run</button>
+                    <button type="button" id="run3" class="btn xbtn-xs btn-info btn-touchplaterun3" style="width:48%;">G92 Run</button>
+                    <p>Enter Feedrate and Height input fields</p>
                 </div>
 
                 <!-- Tab 3 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-touchplate-tab3">
-                    <table class="table table-condensed table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class = "td-1L">
-                                    <p>Runs from the fixed location via G30. Sets Z-zero for WCS</p>
-                                    <ul>
-                                        <li>Enter values for feedrate and height</li>
-                                        <li>Enter Z-clearance value to raise head</li>
-                                        <li>If the G30 position has not been defined, go to the G30 tab</li>
-                                    </ul>
-                                </td>
-                                <td class = "td-1R">
-                                    <button type="button" id="run4" class="btn xbtn-xs btn primary btn-touchplaterun4" style="width:48%;">G5x Run</button>
-                                    <button type="button" id="run5" class="btn xbtn-xs btn-info btn-touchplaterun5" style="width:48%;">G92 Run</button>
-                                    <p>Enter Feedrate and Height input fields</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="tab-pane" id="com-chilipeppr-widget-playground-tab3">
+                    <p>This is tab 3</p>
                 </div>
                 
                 <!-- Tab 4 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-touchplate-tab4">
-                    <table class="table table-condensed table-bordered">
-                        <tbody>
-                            <tr>
-                                <td class = "td-1L">
-                                    <p>Defines the G30 position based on the mill's current position</p>
-                                    <ul style="padding-left:20px">
-                                        <li>Move machine to the X & Y location above fixed touch plate.</li>
-                                        <li>Adjust Z-height to ensure tool selection will clear the touchplate.</li>
-                                        <li>Click button to set the G30 location</li>
-                                    </ul>
-                                </td>
-                                <td class = "td-1R">
-                                    <button type="button" id="run6" class="btn xbtn-xs btn primary btn-touchplaterun6" style="width:100%;">G30 Run</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="tab-pane" id="com-chilipeppr-widget-playground-tab4">
+                    <p>This is tab 4</p>
                 </div>
                 
                 <!-- Tab 5 -->
-                <div class="tab-pane" id="com-chilipeppr-widget-touchplate-tab5">
+                <div class="tab-pane" id="com-chilipeppr-widget-playground-tab5">
                     <p>This is the content of tab 5.</p>
                 </div>
-
             </div>
-
         </div>
     </div>
 </body>
