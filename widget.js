@@ -146,7 +146,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
             $('#' + this.id + ' .btn-touchplaterun2').click(this.onRun.bind(this));
             $('#' + this.id + ' .btn-touchplaterun3').click(this.onRun.bind(this));
             
-            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this.onCoordsUpdate.bind(this));
+            chilipeppr.subscribe('/com-chilipeppr-interface-cnccontroller/coords',this, this.onCoordsUpdate);
 
             console.log("I am done being initted.");
         },
@@ -158,6 +158,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         
         onCoordsUpdate: function(coords) {
             console.log("onCoordUpdate. coords:", coords);
+            alert("onCoordsUpdate: ", coords);
             if (coords.coord != this.lastCoords.coord) {
                 $('.com-chilipeppr-widget-playground-coords').text(coords.coordNum);
                 $('.com-chilipeppr-widget-playground-tab2-name').text(coords.coord +" Float");
@@ -168,6 +169,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
                 gCoordNum = coords.coordNum; //54, 55, etc
                 gCoord = coords.coord; // G54, G55, etc
             }
+            chilipeppr.unsubscribe('/com-chilipeppr-interface-cnccontroller/coords',this, this.onCoordsUpdate);
         },
         
         gcodeCtr: 0,
@@ -178,6 +180,7 @@ cpdefine("inline:com-chilipeppr-widget-playground", ["chilipeppr_ready", /* othe
         onRun: function(evt) {
             // when user clicks the run button
             console.log("user clicked run button. evt:", evt, event.target.id);
+            chilipeppr.unsubscribe('/com-chilipeppr-interface-cnccontroller/coords',this, this.onCoordsUpdate);
             
             // define variable to determine which subroutine to run based on
             // user selection through the tabs
